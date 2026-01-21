@@ -5,10 +5,9 @@ const database = {
      grade4: [
         { id: 1, type: 'lesson', title: 'Introduction to Fractions', desc: 'Understanding numerator and denominator.', content: 'A fraction represents a part of a whole.' },
         { id: 2, type: 'quiz', title: 'Fractions Unit Quiz', quizId: 'q_g4_fr', questions: [{ q: "What is 1/2 of 10?", options: ["2", "5", "10", "1"], a: 1 }, { q: "Which fraction is larger?", options: ["1/4", "1/2", "1/8", "1/10"], a: 1 }] },
-        { id: 3, type: 'video', title: 'Long Division Made Easy', url: 'https://www.youtube.com/embed/0uz_-j5g1ww', vidId: 'vid_g4_div', duration: '15:23' },
-        { id: 4, type: 'video', title: 'تأثير الضغط على الكائنات البحرية', url: 'https://www.youtube.com/embed/6pu8_A0ks2Q?si=g_EAkxl6NLONHeoo', vidId: 'vid_g4_div', duration: '15:23' },
+        { id: 3, type: 'video', title: 'تأثير الضغط على الكائنات البحرية', url: 'https://www.youtube.com/embed/6pu8_A0ks2Q?si=g_EAkxl6NLONHeoo', vidId: 'vid_g4_div', duration: '15:23' },
         { 
-            id: 5, 
+            id: 4, 
             type: 'video', 
             title: 'مكونات وطبقات الغلاف الجوي', 
             url: 'https://www.youtube.com/embed/uqCxXJrE7rw', 
@@ -212,4 +211,5 @@ function answerQuestion(idx) {
     renderQuestion();
 
 }
+
 
