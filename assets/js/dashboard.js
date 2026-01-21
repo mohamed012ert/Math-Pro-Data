@@ -1,26 +1,35 @@
 // assets/js/dashboard.js
 
-// --- CONTENT DATABASE ---
+// ------------------------------- grade4 ---------------------------------
 const database = {
-     grade4: [
+    grade4: [
         { id: 1, type: 'lesson', title: 'Introduction to Fractions', desc: 'Understanding numerator and denominator.', content: 'A fraction represents a part of a whole.' },
+       
         { id: 2, type: 'quiz', title: 'Fractions Unit Quiz', quizId: 'q_g4_fr', questions: [{ q: "What is 1/2 of 10?", options: ["2", "5", "10", "1"], a: 1 }, { q: "Which fraction is larger?", options: ["1/4", "1/2", "1/8", "1/10"], a: 1 }] },
-        { id: 3, type: 'video', title: 'تأثير الضغط على الكائنات البحرية', url: 'https://www.youtube.com/embed/6pu8_A0ks2Q?si=g_EAkxl6NLONHeoo', vidId: 'vid_g4_div', duration: '15:23' },
+       // -------------------------------  video ---------------------------------
+
+        { id: 3, type: 'video', title: 'تأثير الضغط على الكائنات البحرية', url: 'https://www.youtube.com/embed/6pu8_A0ks2Q?si=g_EAkxl6NLONHeoo', vidId: 'الضغط', duration: '15:23' },
         { 
             id: 4, 
             type: 'video', 
             title: 'مكونات وطبقات الغلاف الجوي', 
             url: 'https://www.youtube.com/embed/uqCxXJrE7rw', 
-            vidId: 'vid_atmosphere_01', 
+            vidId: 'مكونات الغلاف', 
             duration: '10:00' 
         }
     ],
+
+// ------------------------------- prep1 -----------------------------------------------------------
     prep1: [
         { id: 101, type: 'lesson', title: 'Rational Numbers', desc: 'Set of rational numbers Q.', content: 'Any number expressed as p/q.' },
         { id: 102, type: 'video', title: 'Algebra Basics', url: 'https://www.youtube.com/embed/NybHckSEQBI', vidId: 'vid_p1_alg', duration: '18:30' },
+     
+            // -------------------------------  video ---------------------------------
+ 
         { id: 103, type: 'quiz', title: 'Algebra Month 1', quizId: 'q_p1_alg', questions: [{ q: "Solve for x: x + 5 = 10", options: ["2", "5", "15", "50"], a: 1 }, { q: "Simplify: 2x + 3x", options: ["5x", "6x", "5", "6"], a: 0 }] }
     ]
 };
+// ------------------------------- -------------------------- ---------------------------------
 
 const currentUser = localStorage.getItem('mathProUser');
 const currentGrade = localStorage.getItem('mathProGrade');
@@ -211,5 +220,6 @@ function answerQuestion(idx) {
     renderQuestion();
 
 }
+
 
 
