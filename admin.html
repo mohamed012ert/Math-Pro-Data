@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Pro | Admin Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        /* إخفاء المحتوى تماماً حتى يتم تسجيل الدخول */
+        #mainApp { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 h-screen overflow-hidden">
+
+    <!-- 🔒 شاشة القفل (تظهر دائماً في البداية) -->
+    <div id="lockScreen" class="fixed inset-0 z-[9999] bg-gray-900 flex flex-col items-center justify-center text-white">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center border border-gray-700">
+            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/50">
+                <i class="fa-solid fa-shield-halved text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Restricted Area</h2>
+            <p class="text-gray-400 text-sm mb-6">Enter Admin Access Key</p>
+            
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="password" id="adminKey" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-white placeholder-gray-500 text-center tracking-widest" placeholder="••••••••" required>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition shadow-lg">Unlock Panel</button>
+            </form>
+            <p id="errorMsg" class="text-red-500 text-sm mt-4 font-bold hidden animate-pulse">Access Denied!</p>
+        </div>
+    </div>
+
+    <!-- ⚙️ لوحة التحكم (مخفية افتراضياً) -->
+    <div id="mainApp" class="flex h-full">
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col z-10">
+            <div class="h-20 flex items-center px-8 border-b">
+                <span class="font-bold text-xl text-blue-600">Math Pro <span class="text-xs bg-gray-100 text-gray-600 px-2 rounded ml-1">Admin</span></span>
+            </div>
+            <nav class="flex-1 p-4 space-y-1">
+                <button onclick="switchTab('students')" id="tab-students" class="sidebar-btn active w-full text-left px-4 py-3 rounded-lg font-medium bg-blue-50 text-blue-600"><i class="fa-solid fa-users-gear mr-2"></i> Students</button>
+                <button onclick="switchTab('add')" id="tab-add" class="sidebar-btn w-full text-left px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50"><i class="fa-solid fa-cloud-arrow-up mr-2"></i> Add Content</button>
+                <button onclick="switchTab('manage')" id="tab-manage" class="sidebar-btn w-full text-left px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50"><i class="fa-solid fa-trash-can mr-2"></i> Manage Content</button>
+                <button onclick="switchTab('settings')" id="tab-settings" class="sidebar-btn w-full text-left px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50"><i class="fa-solid fa-bullhorn mr-2"></i> Announcement</button>
+            </nav>
+            <div class="p-4 border-t">
+                <button onclick="adminLogout()" class="w-full flex items-center justify-center gap-2 text-red-500 hover:bg-red-50 px-4 py-3 rounded-lg transition font-medium"><i class="fa-solid fa-power-off"></i> Lock Panel</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 overflow-y-auto p-8 bg-gray-50">
+            <!-- Students View -->
+            <div id="view-students" class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Student Management</h2>
+                    <button onclick="loadStudents()" class="text-blue-600 hover:underline"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                </div>
+                <div class="bg-white rounded-xl shadow border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                            <tr><th class="p-4">Name</th><th class="p-4">Grade</th><th class="p-4">Pass</th><th class="p-4 text-center">Attendance</th><th class="p-4">Score</th></tr>
+                        </thead>
+                        <tbody id="studentsTableBody" class="divide-y text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add Content View -->
+            <div id="view-add" class="hidden max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-xl font-bold mb-6">Add Content</h2>
+                <form id="addForm" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <select id="grade" class="p-3 border rounded-lg"><option value="grade4">Grade 4</option><option value="prep1">Prep 1</option></select>
+                        <select id="type" class="p-3 border rounded-lg" onchange="toggleFields()"><option value="video">Video</option><option value="quiz">Quiz</option><option value="lesson">Lesson</option></select>
+                    </div>
+                    <input type="text" id="title" class="w-full p-3 border rounded-lg" placeholder="Title" required>
+                    <input type="text" id="desc" class="w-full p-3 border rounded-lg" placeholder="URL or Description">
+                    <textarea id="content" class="w-full p-3 border rounded-lg h-32 hidden" placeholder="JSON Content"></textarea>
+                    <button type="submit" id="addBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Publish</button>
+                    <p id="addStatus" class="text-center font-bold text-sm mt-2"></p>
+                </form>
+            </div>
+
+            <!-- Manage View -->
+            <div id="view-manage" class="hidden max-w-4xl mx-auto">
+                <h2 class="text-xl font-bold mb-6">Manage Content</h2>
+                <button onclick="loadManageContent()" class="text-blue-600 text-sm mb-4">Refresh List</button>
+                <div id="manageGrid" class="space-y-3"></div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="view-settings" class="hidden max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-xl font-bold mb-4">Announcement</h2>
+                <textarea id="announcementText" class="w-full p-4 border rounded-xl h-32 mb-4" placeholder="Type here..."></textarea>
+                <button onclick="saveAnnouncement()" id="saveAnnBtn" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold">Update</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/config.js"></script>
+    <script>
+        // 🔒 SECURITY CONFIGURATION
+        const ACCESS_KEY = "MathPro"; // الباسورد المطلوب
+        
+        // 1. Check Session on Load
+        window.onload = function() {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                showDashboard();
+            }
+        };
+
+        // 2. Handle Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const input = document.getElementById('adminKey').value;
+            
+            if (input === ACCESS_KEY) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                showDashboard();
+            } else {
+                const msg = document.getElementById('errorMsg');
+                msg.classList.remove('hidden');
+                document.getElementById('adminKey').value = "";
+                setTimeout(() => msg.classList.add('hidden'), 2000);
+            }
+        }
+
+        // 3. Show Dashboard Logic
+        function showDashboard() {
+            document.getElementById('lockScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            loadStudents(); // Load data only after login
+        }
+
+        // 4. Logout
+        function adminLogout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            location.reload(); // Reloads page to show lock screen
+        }
+
+        // --- APP LOGIC BELOW ---
+        // (نفس الكود السابق مع بعض التحسينات)
+
+        // Password variable for backend calls (uses the same key)
+        const adminPass = ACCESS_KEY; 
+
+        function switchTab(t) {
+            document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById(`view-${t}`).classList.remove('hidden');
+            document.querySelectorAll('.sidebar-btn').forEach(b => {
+                b.className = "sidebar-btn w-full text-left px-4 py-3 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition";
+            });
+            document.getElementById(`tab-${t}`).className = "sidebar-btn w-full text-left px-4 py-3 rounded-lg font-medium bg-blue-50 text-blue-600 transition";
+            if(t==='students') loadStudents();
+            if(t==='manage') loadManageContent();
+        }
+
+        function toggleFields() {
+            document.getElementById('content').classList.toggle('hidden', document.getElementById('type').value === 'video');
+        }
+
+        // --- DATA FUNCTIONS ---
+
+        async function loadStudents() {
+            const tbody = document.getElementById('studentsTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400">Loading...</td></tr>';
+            try {
+                const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllStudents&adminPass=${encodeURIComponent(adminPass)}`);
+                const data = await res.json();
+                if(data.error || !data.length) { tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400">No data found.</td></tr>'; return; }
+                
+                let html = "";
+                data.forEach(s => {
+                    let attVal = parseFloat(String(s.attendance).replace('%',''));
+                    if(attVal<=1 && attVal>0) attVal = Math.round(attVal*100);
+
+                    let scoreVal = parseFloat(String(s.score).replace('%',''));
+                    if(scoreVal<=1 && scoreVal>0) scoreVal = Math.round(scoreVal*100);
+                    if(isNaN(scoreVal)) scoreVal = 0;
+
+                    html += `<tr class="border-b hover:bg-gray-50">
+                        <td class="p-4 font-bold">${s.name}</td>
+                        <td class="p-4"><span class="bg-gray-100 text-xs px-2 py-1 rounded font-bold uppercase">${s.grade}</span></td>
+                        <td class="p-4 text-gray-500 font-mono text-xs">${s.password}</td>
+                        <td class="p-4 flex justify-center gap-2">
+                            <input type="number" id="att-${s.name}" value="${attVal}" class="w-16 border rounded text-center p-1">
+                            <button onclick="saveAttendance('${s.name}','${s.grade}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-check"></i></button>
+                        </td>
+                        <td class="p-4 font-bold">${scoreVal}%</td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">Connection Error</td></tr>'; }
+        }
+
+        async function saveAttendance(name, grade) {
+            const val = document.getElementById(`att-${name}`).value;
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'updateAttendance', adminPass, student: name, grade, attendance: val+"%" }) });
+            alert("Attendance Saved!");
+        }
+
+        document.getElementById('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('addBtn').innerText = "Publishing...";
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({
+                action: 'addContent', adminPass, 
+                grade: document.getElementById('grade').value, type: document.getElementById('type').value,
+                title: document.getElementById('title').value, desc: document.getElementById('desc').value, content: document.getElementById('content').value
+            })});
+            document.getElementById('addBtn').innerText = "Publish";
+            document.getElementById('addStatus').innerText = "Done ✅";
+            setTimeout(()=>document.getElementById('addStatus').innerText="", 2000);
+        });
+
+        async function loadManageContent() {
+            const grid = document.getElementById('manageGrid'); grid.innerHTML = "Loading...";
+            const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getContent`);
+            const data = await res.json();
+            let html = "";
+            ['grade4','prep1'].forEach(g=>{
+                if(data[g]) data[g].forEach(i=>{
+                    html += `<div class="bg-white p-3 rounded border flex justify-between items-center"><div><b>${i.title}</b> <span class="text-xs text-gray-500 uppercase">${i.type}</span></div><button onclick="del('${i.id}',this)" class="text-red-500 hover:underline text-sm">Delete</button></div>`;
+                });
+            });
+            grid.innerHTML = html || "No content.";
+        }
+
+        async function del(id, btn) {
+            if(!confirm("Delete?")) return;
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'deleteContent', adminPass, id })});
+            btn.parentElement.remove();
+        }
+
+        async function saveAnnouncement() {
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'updateAnnouncement', adminPass, text: document.getElementById('announcementText').value })});
+            alert("Announcement Updated!");
+        }
+    </script>
+</body>
+</html>

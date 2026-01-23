@@ -1,18 +1,15 @@
 /* assets/css/style.css */
 
-/* Login Page Background */
 body.page-login { 
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
     min-height: 100vh; 
 }
 
-/* Dashboard Page Background */
 body.page-dashboard { 
     font-family: 'Poppins', sans-serif; 
     background: linear-gradient(135deg, #f6f9fc 0%, #f0f4f8 100%); 
 }
 
-/* Common Classes */
 .glass-panel { 
     background: rgba(255, 255, 255, 0.95); 
     backdrop-filter: blur(10px); 
@@ -35,7 +32,6 @@ body.page-dashboard {
     border-right: 3px solid #2563eb; 
 }
 
-/* Loader Animation */
 .loader { 
     border: 3px solid #f3f3f3; 
     border-top: 3px solid #2563eb; 
@@ -44,7 +40,6 @@ body.page-dashboard {
     height: 20px; 
     animation: spin 1s linear infinite; 
     display: inline-block; 
-    margin-right: 8px; 
 }
 
 @keyframes spin { 

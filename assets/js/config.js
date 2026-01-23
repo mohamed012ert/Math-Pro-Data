@@ -1,9 +1,8 @@
+
 // assets/js/config.js
+// 🔴 تأكد أن الرابط هو الرابط الجديد الذي يعمل معك 🔴
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKhEWe2yeIqXs3kA9rmOQ7TeJhV7tpAisWOzi2PUxce721Che26WFw833ToxFm2Xil/exec";
 
-// 🔴 تأكد من أن هذا الرابط هو الرابط الخاص بك 🔴
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-tnShVGNz6-IUXdyDYkoKiLr-F3FBG18qEVqSO6J-k1Eoo23JUrw_O1eVbOW-Q1nOIg/exec";
-
-// إعدادات Tailwind والألوان
 tailwind.config = {
     theme: {
         extend: {
@@ -18,9 +17,20 @@ tailwind.config = {
     }
 };
 
-// دالة مساعدة لحل مشكلة النسبة المئوية (1 -> 100%)
+// ✅ الدالة الجديدة: تحل مشكلة 0.4 وتجعلها 40%
 function formatScore(score) {
-    if (score === 1 || score === "1" || score === 100) return "100%";
-    if (!score) return "0%";
-    return String(score).includes('%') ? score : score + "%";
+    if (score == null || score === "") return "0%"; // لو فارغ
+    
+    let str = String(score);
+    if (str.includes('%')) return str; // لو النسبة موجودة أصلاً
+
+    let num = parseFloat(str);
+    
+    // إذا كان الرقم عشري (أقل من أو يساوي 1) مثل 0.4 أو 0.55
+    if (num <= 1 && num > 0) {
+        return Math.round(num * 100) + "%"; 
+    }
+    
+    // إذا كان الرقم عادي مثل 40 أو 90
+    return Math.round(num) + "%";
 }
